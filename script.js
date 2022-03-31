@@ -1,19 +1,16 @@
 window.onload = function()
 {
-
+    
     var canvasWidth = 900;
     var canvasHeight = 600;
     var blockSize = 30;
     var ctx;
-    var delay= 1000;
+    var delay= 100;
     var applee;
     var widthInBlock = canvasWidth/blockSize;
     var heightInBlocks = canvasHeight/blockSize;
-
-    
-   //var  xCoord = 0;// initialiser la varibale 
-   //var  yCoord = 0; // initialiser la varibale 
     var snakee;
+    var score;
     init();
     
     function init()// pour initialiser  
@@ -29,6 +26,7 @@ window.onload = function()
     applee = new apple([10,10]); 
     //ctx.fillStyle ="#ff0000";// color
     //ctx.fillRect(30 ,30 , 100, 50); // icci 100 largeur 50 hauteur,
+    score= 0;
        
         
         refresgCanvas();
@@ -42,16 +40,67 @@ window.onload = function()
         snakee.advance();
         if(snakee.checkCollision())
         {
-            //Game over
+            gameOver();
         }
        else
        {
+           if(snakee.isEatingapple(applee))
+           { 
+            score++;
+               snakee.ateApple= true;
+               do
+               {
+                applee.setNewPostion();
+
+               }
+               while(applee.isOnSnake(snakee))
+               
+               // le serpent a mange une pomme
+           }
+        ctx.clearRect(0,0,canvasWidth, canvasHeight)
         snakee.draw();
         applee.draw();
+        drawScor();
         // qui permets d'exucte la fonction refresgCanvas a un delai de 1s
          setTimeout(refresgCanvas,delay);
         
        }
+    }
+    //function gime ouvre
+    function gameOver()
+    { // Début de gameOver
+        ctx.save(); 
+        //ctx.font = "bold 70px sans-sherif";
+        //ctx.fillStyle = "#000";
+        //ctx.textAlign ="center";
+        //ctx.textBaseline = "middle";
+        //ctx.strokeStyle = "white";
+        //ctx.lineWidth = 5;
+        //var centreX = canvasWidth / 2;
+        //var centreY = canvasHeight /2;
+       // ctx.strokeText("Game Over", centreX, centreY-180);
+        ctx.fillText("Game Over", 5, 15);
+        //ctx.font = "bold 30px sans-sherif";
+        //ctx.strokeText("Appuyez sur la touche expace pour rejouer", centreX, centreY-120);
+        ctx.fillText("Appuyez sur la touche expace pour rejouer",   5, 30);
+        ctx.restore(); 
+     } // --- Fin de gameOver
+     // dunction restart 
+     function restart()
+    { // Début de restart
+      snakee = new snake([[6,4],[5,4],[4,4],[3,4],[2,4]],"right");
+      applee = new apple([10,10]);
+      score =0; 
+      clearTimeout(timeout); // réinitialise le timeout = même vitesse pour chaque partie
+      refresgCanvas();  
+    } // fin de restart
+    // 
+    function drawScor()
+    {
+        ctx.save();
+        ctx.fillText(score.toString(), 5, canvasHeight-5);
+        
+        ctx.restore();
     }
     // creation function drawBlock
     function drawBlock(ctx, postion)
@@ -65,6 +114,7 @@ window.onload = function()
     {
             this.body = body; 
             this.direction = direction;
+            this.ateApple= false;
             this.draw= function()
                 {
                 ctx.save();
@@ -97,7 +147,10 @@ window.onload = function()
                             throw("invalid direction");
                         }
                     this.body.unshift(nextPostion);
+                    if(!this.ateApple)
                     this.body.pop();
+                    else
+                    this.ateApple= false;
                 };
             
                 this.setDirection = function(newDirection)
@@ -105,13 +158,13 @@ window.onload = function()
                 var allowedDiction;
                 switch(this.direction)
                     {
-                        case "left":
+                            case "left":
                             case "right":
-                            allowedDiction = ["up", "down"];
+                            allowedDiction = ["up","down"];
                                 break;
                             case "down":   
                             case "up":
-                        allowedDiction = ["left", "right"] ;
+                        allowedDiction = ["left","right"];
                                 break;
                         default:
                             throw("invalid direction");
@@ -132,8 +185,8 @@ window.onload = function()
                 var snakeY = head[1];
                 var minX = 0;
                 var minY = 0;
-                var maxX= widthInBlock-1;
-                var maxY=  heightInBlocks-1;
+                var maxX = widthInBlock-1;
+                var maxY =  heightInBlocks-1;
                 var isNotBetweenHorizontalWalls = snakeX < minX || snakeX > maxX;
                 var isNotBetweenverticallWalls = snakeY < minY || snakeY > maxY;
                 if(isNotBetweenHorizontalWalls || isNotBetweenverticallWalls)
@@ -149,6 +202,17 @@ window.onload = function()
                 }  
                return wallCollision || snakCollision;
             };
+            this.isEatingapple= function(appleToEat)
+            {
+              var head = this.body[0];
+              if(head[0] === appleToEat.postion[0] && head[1]=== appleToEat.postion[1])
+              
+                  return true;
+              
+              else
+                  return false;
+              
+            };
         }
         // function pour la pomme
 
@@ -161,12 +225,31 @@ window.onload = function()
                 ctx.fillStyle = "#33cc33";
                 ctx.beginPath();
                 var radius = blockSize/2;
-                var x = postion[0]*blockSize+radius;
+                var x = this.postion[0]*blockSize+radius;
                 
-                var y = postion[1]*blockSize+radius;
+                var y = this.postion[1]*blockSize+radius;
                 ctx.arc(x,y, radius,0 , Math.PI*2, true);
                 ctx.fill();
                 ctx.restore();
+                
+            };
+            this.setNewPostion = function()
+                {
+               var newX = Math.round(Math.random() * (widthInBlock -1));
+               var newY = Math.round(Math.random() * (heightInBlocks -1));
+               this.postion[newX,newY];
+            };
+            this.isOnSnake = function(snakeToCkeck)
+            {
+             var isOnSnake = false;
+             for (var i = 0; i < snakeToCkeck.body.length; i++)
+             {
+                 if(this.postion[0] === snakeToCkeck.body[i][0] && this.postion[1]=== snakeToCkeck.body[i][1])
+                 {
+                     isOnSnake= true;
+                 }
+             }
+             return isOnSnake;
             };
 
         }
@@ -191,6 +274,10 @@ window.onload = function()
                                 case 40:
                                 newDirection ="down"; 
                                 break;
+                                case 32:
+                                    restart();
+                                    return;
+                                    break;
                                 default:
                                 return;
                             
