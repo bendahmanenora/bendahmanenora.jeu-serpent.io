@@ -4,12 +4,12 @@ var apple;
 var snakeGame;
 window.onload = function()
 { 
-    snakeGame = new SnakeGeme(900, 600, 30, 100);
+    snakeGame = new SnakeGeme(900, 430, 30, 100);
     snake = new Snake([[6, 4], [5, 4], [4, 4], [3, 4], [2, 4]], "right");
     apple = new Apple([10, 10]);
     snakeGame.init(snake,apple);
 }
-//evenment pour clavier
+//événement pour les touches de clavier
 document.onkeydown = function handleKeyDown(e)
 {
      var key = e.keyCode;
@@ -39,16 +39,16 @@ document.onkeydown = function handleKeyDown(e)
              }
              snakeGame.snake.setDirection(newDirection);
 }
-
+// fonction de jeu 
 function SnakeGeme(canvasWidth, canvasHeight, blockSize, delay)
 {
     this.canvas= document.createElement('canvas');
     this.canvas.width= canvasWidth;
     this.canvas.height= canvasHeight;
-    this.canvas.style.border ="30px solid gray";
-    this.canvas.style.margin= "50px auto";
+    this.canvas.style.border ="1px solid gray";
+    this.canvas.style.margin = "50px auto";
     this.canvas.style.display = "block";
-    this.canvas.style.backgroundColor="#ddd";
+    this.canvas.style.backgroundColor = "#ddd";
     document.body.appendChild(this.canvas);
     this.ctx = this.canvas.getContext('2d'); 
     this.blockSize = blockSize;
@@ -61,7 +61,7 @@ function SnakeGeme(canvasWidth, canvasHeight, blockSize, delay)
     var instance = this;
     var timeout;
 
-    this.init = function (snake, apple)// pour initialiser  
+    this.init = function (snake, apple) 
     {
         this.snake= snake;
         this.apple= apple;
@@ -90,7 +90,7 @@ function SnakeGeme(canvasWidth, canvasHeight, blockSize, delay)
                }
                while(instance.apple.isOnSnake(instance.snake))
                
-               // le serpent a mange une pomme
+            
            }
         instance.ctx.clearRect(0,0,instance.canvas.width, instance.canvas.height);
         instance.drawScor();
@@ -98,9 +98,7 @@ function SnakeGeme(canvasWidth, canvasHeight, blockSize, delay)
         instance.snake.draw(instance.ctx, instance.blockSize);
         instance.apple.draw(instance.ctx, instance.blockSize);
         // qui permets d'exucte la fonction refresgCanvas a un delai de 1s
-        timeout = setTimeout(refresgCanvas,delay);
-        
-        
+        timeout = setTimeout(refresgCanvas,delay); 
        }
     } 
     this.checkCollision = function()
@@ -135,22 +133,22 @@ function SnakeGeme(canvasWidth, canvasHeight, blockSize, delay)
     { // Début de gameOver
         this.ctx.save(); 
         this.ctx.font = "bold 30px sans-serif";
-         this.ctx.fillStyle = "#000";
-         this.ctx.textAlign = "center";
-         this.ctx.textBaseline = "middle";
-         this.ctx.strokeStyle="white";
-         this.ctx.lineWidth="5";
-         var centerX= this.canvas.width / 2;
-         var centerY= this.canvas.hight / 2; 
+        this.ctx.fillStyle = "#000";
+        this.ctx.textAlign = "center";
+        this.ctx.textBaseline = "middle";
+        this.ctx.strokeStyle="white";
+        this.ctx.lineWidth="5";
+         var centerX = this.canvas.width / 2;
+         var centerY = this.canvas.height / 2;  
 
 
         this.ctx.strokeText("Game Over", centerX, centerY -180);
         this.ctx.fillText("Game Over", centerX, centerY -180);
 
         this.ctx.font = "bold 30px sans-serif";
-        this.ctx.strokeText("Appuyez sur la touche expace pour rejouer", centerX, centerY -120);
+        this.ctx.strokeText("Appuyez sur la touche Espace pour rejouer", centerX, centerY -120);
 
-        this.ctx.fillText("Appuyez sur la touche expace pour rejouer",  centerX, centerY -120);
+        this.ctx.fillText("Appuyez sur la touche Espace pour rejouer",  centerX, centerY -120);
         this.ctx.restore(); 
      }; // --- Fin de gameOver
      //
@@ -161,8 +159,8 @@ function SnakeGeme(canvasWidth, canvasHeight, blockSize, delay)
          this.ctx.fillStyle = "gray";
          this.ctx.textAlign = "center";
          this.ctx.textBaseline = "middle";
-         var centerX= this.canvas.width / 2;
-         var centerY= this.canvas.hight / 2; 
+         var centerX = this.canvas.width / 2;
+         var centerY = this.canvas.height / 2; 
          this.ctx.fillText(this.score.toString(), centerX, centerY);
          this.ctx.restore();
      };
@@ -176,7 +174,7 @@ function Snake(body, direction)
         this.draw = function(ctx, blockSize)
            {
                 ctx.save();
-                ctx.fillStyle = "#ff0000";
+                ctx.fillStyle = "gray";
                     for(var i = 0; i < this.body.length; i++)
                         {   
                         var x = this.body[i][0] * blockSize; 
@@ -272,7 +270,7 @@ function Apple(postion)
           {
             var newX = Math.round(Math.random() * (widthInBlock -1));
             var newY = Math.round(Math.random() * (heightInBlocks -1));
-            this.postion[newX, newY];
+            this.postion=[newX, newY];
          };
 
         this.isOnSnake = function(snakeToCkeck)
